@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobHive – The Free Job Seekers Community</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --honey: #F5A623;
+    --amber: #E8820C;
+    --deep: #1A1008;
+    --warm: #2C1A0A;
+    --cream: #FFF8EE;
+    --soft: #FDF3E2;
+    --muted: #7A5C3A;
+    --accent: #FF6B35;
+    --green: #2ECC71;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: linear-gradient(180deg, rgba(26,16,8,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--honey);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--cream); }
+
+  nav ul { list-style: none; display: flex; gap: 36px; }
+  nav ul li a {
+    color: rgba(255,248,238,0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+  nav ul li a:hover { color: var(--honey); }
+
+  .nav-cta {
+    background: var(--honey);
+    color: var(--deep) !important;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-weight: 600 !important;
+    transition: background 0.2s, transform 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--amber) !important; transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(245,166,35,0.18) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,166,35,0.12);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--honey);
+    letter-spacing: 0.5px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    max-width: 820px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  h1 .highlight {
+    color: var(--honey);
+    position: relative;
+    display: inline-block;
+  }
+  h1 .highlight::after {
+    content: '';
+    position: absolute; bottom: 4px; left: 0; right: 0;
+    height: 3px;
+    background: var(--honey);
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 1.15rem;
+    color: rgba(255,248,238,0.65);
+    max-width: 560px;
+    line-height: 1.7;
+    font-weight: 300;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .hero-actions {
+    margin-top: 44px;
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--honey);
+    color: var(--deep);
+    padding: 16px 36px;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 40px rgba(245,166,35,0.25);
+  }
+  .btn-primary:hover {
+    background: var(--amber);
+    transform: translateY(-2px);
+    box-shadow: 0 0 60px rgba(245,166,35,0.4);
+  }
+
+  .btn-ghost {
+    border: 1px solid rgba(255,248,238,0.2);
+    color: var(--cream);
+    padding: 16px 36px;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-ghost:hover {
+    border-color: var(--honey);
+    background: rgba(245,166,35,0.06);
+  }
+
+  .hero-stats {
+    margin-top: 64px;
+    display: flex; gap: 48px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.7s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--honey);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    color: rgba(255,248,238,0.45);
+    font-weight: 400;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .stat-div {
+    width: 1px; background: rgba(255,248,238,0.1);
+    height: 40px; align-self: center;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FEATURES ── */
+  .section {
+    padding: 100px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--honey);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    max-width: 600px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .feature-card {
+    background: rgba(255,248,238,0.04);
+    border: 1px solid rgba(255,248,238,0.08);
+    border-radius: 20px;
+    padding: 36px 32px;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--honey), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    background: rgba(245,166,35,0.07);
+    border-color: rgba(245,166,35,0.2);
+    transform: translateY(-4px);
+  }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .feature-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--cream);
+  }
+
+  .feature-text {
+    font-size: 0.92rem;
+    color: rgba(255,248,238,0.55);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    background: rgba(255,248,238,0.02);
+    border-top: 1px solid rgba(255,248,238,0.06);
+    border-bottom: 1px solid rgba(255,248,238,0.06);
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
+    margin-top: 56px;
+  }
+
+  .step {
+    padding: 32px;
+    position: relative;
+    text-align: center;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -12px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    color: rgba(245,166,35,0.3);
+  }
+
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: rgba(245,166,35,0.15);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .step-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: var(--cream);
+  }
+
+  .step-text {
+    font-size: 0.85rem;
+    color: rgba(255,248,238,0.45);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── ROOMS / COMMUNITY ── */
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 56px;
+  }
+
+  .room-card {
+    background: var(--warm);
+    border: 1px solid rgba(255,248,238,0.06);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .room-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+  }
+
+  .room-header {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .room-emoji { font-size: 1.5rem; }
+  .room-name { font-weight: 600; font-size: 0.95rem; }
+  .room-count {
+    margin-left: auto;
+    background: rgba(46,204,113,0.15);
+    color: var(--green);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+  .room-desc {
+    font-size: 0.82rem;
+    color: rgba(255,248,238,0.45);
+    line-height: 1.6;
+  }
+  .room-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    background: rgba(245,166,35,0.1);
+    color: var(--honey);
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .testimonial {
+    background: rgba(255,248,238,0.03);
+    border: 1px solid rgba(255,248,238,0.07);
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .testimonial-quote {
+    font-size: 1.6rem;
+    color: var(--honey);
+    margin-bottom: 16px;
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+  }
+
+  .testimonial-text {
+    font-size: 0.9rem;
+    color: rgba(255,248,238,0.65);
+    line-height: 1.75;
+    margin-bottom: 24px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .testimonial-author { display: flex; align-items: center; gap: 12px; }
+  .author-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    background: rgba(245,166,35,0.15);
+  }
+  .author-name { font-weight: 600; font-size: 0.88rem; }
+  .author-role { font-size: 0.78rem; color: rgba(255,248,238,0.4); margin-top: 2px; }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    padding: 100px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    max-width: 660px;
+    margin: 0 auto 20px;
+  }
+  .cta-section p {
+    color: rgba(255,248,238,0.55);
+    font-size: 1rem;
+    margin-bottom: 44px;
+    font-weight: 300;
+  }
+
+  /* ── SIGNUP FORM ── */
+  .signup-form {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .signup-form input {
+    flex: 1; min-width: 220px;
+    background: rgba(255,248,238,0.06);
+    border: 1px solid rgba(255,248,238,0.15);
+    border-radius: 100px;
+    padding: 14px 24px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .signup-form input::placeholder { color: rgba(255,248,238,0.3); }
+  .signup-form input:focus { border-color: var(--honey); }
+  .signup-form button {
+    background: var(--honey);
+    color: var(--deep);
+    border: none;
+    border-radius: 100px;
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .signup-form button:hover { background: var(--amber); transform: translateY(-1px); }
+
+  .free-badge {
+    margin-top: 20px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8rem;
+    color: rgba(255,248,238,0.4);
+  }
+  .free-badge span { color: var(--green); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(255,248,238,0.06);
+    padding: 40px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--honey);
+  }
+  .footer-logo span { color: var(--cream); }
+  footer p { font-size: 0.8rem; color: rgba(255,248,238,0.3); }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a {
+    font-size: 0.82rem;
+    color: rgba(255,248,238,0.35);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--honey); }
+
+  /* ── SUCCESS MESSAGE ── */
+  .success-msg {
+    display: none;
+    color: var(--green);
+    font-size: 0.95rem;
+    margin-top: 16px;
+    animation: fadeUp 0.4s ease;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    nav ul { display: none; }
+    .section { padding: 70px 24px; }
+    .step:not(:last-child)::after { display: none; }
+    footer { flex-direction: column; text-align: center; padding: 32px 24px; }
+    .hero-stats { gap: 28px; }
+    .stat-div { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Job<span>Hive</span></div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#rooms">Rooms</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#join" class="nav-cta">Join Free →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    2,400+ members online right now
+  </div>
+
+  <h1>
+    Land Your Next Job<br>
+    <span class="highlight">Together.</span>
+  </h1>
+
+  <p class="hero-sub">
+    A free community for job seekers. Share leads, practice mock interviews, get resume feedback, and cheer each other to the finish line.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#join" class="btn-primary">🐝 Join for Free</a>
+    <a href="#rooms" class="btn-ghost">Browse Rooms →</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">18K+</div>
+      <div class="stat-label">Members</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat">
+      <div class="stat-num">340+</div>
+      <div class="stat-label">Jobs Shared Today</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat">
+      <div class="stat-num">1,200+</div>
+      <div class="stat-label">Mock Interviews Done</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Free Forever</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-tag">Why JobHive</div>
+  <h2 class="section-title">Everything you need to get hired, from real people</h2>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">💼</span>
+      <div class="feature-title">Job Leads & Referrals</div>
+      <p class="feature-text">Members share openings, recruiter contacts, and internal referrals daily. Get access to roles that never hit job boards.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🎤</span>
+      <div class="feature-title">Mock Interview Practice</div>
+      <p class="feature-text">Pair up with another job seeker for live mock interviews. Give and get feedback. Build confidence before the real thing.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📄</span>
+      <div class="feature-title">Resume Reviews</div>
+      <p class="feature-text">Post your resume for community feedback. Get multiple perspectives from people in your target industry.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💬</span>
+      <div class="feature-title">Real-time Chat Rooms</div>
+      <p class="feature-text">Industry-specific rooms for tech, finance, healthcare, and more. Ask questions, share wins, vent — it's all welcome.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🧠</span>
+      <div class="feature-title">Interview Question Bank</div>
+      <p class="feature-text">A crowdsourced database of real interview questions submitted by members. Prep smarter, not harder.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🤝</span>
+      <div class="feature-title">Accountability Buddies</div>
+      <p class="feature-text">Get matched with a job search partner. Set weekly goals together and keep each other on track.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section" style="padding-top:80px;padding-bottom:80px;">
+    <div class="section-tag">How It Works</div>
+    <h2 class="section-title">From signup to hired — in 4 simple steps</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Create a free account</div>
+        <p class="step-text">Sign up in 30 seconds. No credit card, no subscription — ever.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Pick your rooms</div>
+        <p class="step-text">Join channels that match your role, industry, and job search stage.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Engage daily</div>
+        <p class="step-text">Share leads, request a mock interview, post your resume, or just cheer someone on.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">Land the job 🎉</div>
+        <p class="step-text">Pay it forward — come back and help the next person in line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROOMS -->
+<section class="section" id="rooms">
+  <div class="section-tag">Community Rooms</div>
+  <h2 class="section-title">Find your people</h2>
+
+  <div class="rooms-grid">
+    <div class="room-card">
+      <div class="room-header">
+        <span class="room-emoji">💻</span>
+        <span class="room-name">#tech-jobs</span>
+        <span class="room-count">● 840 online</span>
+      </div>
+      <p class="room-desc">Software engineers, PMs, data scientists, and designers hunting their next role.</p>
+      <div class="room-tags">
+        <span class="tag">Engineering</span>
+        <span class="tag">Product</span>
+        <span class="tag">Data</span>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-header">
+        <span class="room-emoji">🎤</span>
+        <span class="room-name">#mock-interviews</span>
+        <span class="room-count">● 312 online</span>
+      </div>
+      <p class="room-desc">Schedule peer mock interviews, share feedback, and post your hardest interview questions.</p>
+      <div class="room-tags">
+        <span class="tag">Behavioral</span>
+        <span class="tag">Technical</span>
+        <span class="tag">Case</span>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-header">
+        <span class="room-emoji">🏦</span>
+        <span class="room-name">#finance-banking</span>
+        <span class="room-count">● 216 online</span>
+      </div>
+      <p class="room-desc">Finance, accounting, banking, and fintech roles — shared and discussed daily.</p>
+      <div class="room-tags">
+        <span class="tag">Finance</span>
+        <span class="tag">Accounting</span>
+        <span class="tag">Fintech</span>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-header">
+        <span class="room-emoji">🏥</span>
+        <span class="room-name">#healthcare</span>
+        <span class="room-count">● 194 online</span>
+      </div>
+      <p class="room-desc">Healthcare IT, clinical, and administrative roles with industry-specific prep tips.</p>
+      <div class="room-tags">
+        <span class="tag">Clinical</span>
+        <span class="tag">Health IT</span>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-header">
+        <span class="room-emoji">📄</span>
+        <span class="room-name">#resume-roast</span>
+        <span class="room-count">● 278 online</span>
+      </div>
+      <p class="room-desc">Post your resume, get honest and constructive feedback from peers who've been there.</p>
+      <div class="room-tags">
+        <span class="tag">Resume</span>
+        <span class="tag">LinkedIn</span>
+        <span class="tag">Portfolio</span>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-header">
+        <span class="room-emoji">🤝</span>
+        <span class="room-name">#accountability</span>
+        <span class="room-count">● 405 online</span>
+      </div>
+      <p class="room-desc">Find an accountability buddy and share weekly job search goals with each other.</p>
+      <div class="room-tags">
+        <span class="tag">Goals</span>
+        <span class="tag">Support</span>
+        <span class="tag">Motivation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="section-tag">Community Wins</div>
+  <h2 class="section-title">Real people, real results</h2>
+
+  <div class="testimonials">
+    <div class="testimonial">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">I had 3 mock interviews with members before my Google final round. The feedback they gave me was better than any paid service. Got the offer in 2 weeks.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩‍💻</div>
+        <div>
+          <div class="author-name">Priya M.</div>
+          <div class="author-role">Software Engineer · Hired at Google</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">Posted my resume in #resume-roast on a Tuesday. By Thursday I had 9 detailed reviews and a completely rewritten summary. Got a callback the following week.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👨‍💼</div>
+        <div>
+          <div class="author-name">Marcus T.</div>
+          <div class="author-role">Finance Analyst · Hired at JPMorgan</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">A member DM'd me a role that wasn't public yet because they were leaving the company. That's the kind of community this is. I'm starting next Monday.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩‍⚕️</div>
+        <div>
+          <div class="author-name">Harika S.</div>
+          <div class="author-role">.NET Developer · Contract role secured</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / JOIN -->
+<section class="cta-section" id="join">
+  <div class="cta-glow"></div>
+  <h2>Your next job is one<br>conversation away.</h2>
+  <p>Join free. No credit card. No catch. Just people helping people.</p>
+
+  <div class="signup-form">
+    <input type="email" id="emailInput" placeholder="your@email.com" />
+    <button onclick="handleJoin()">Join Now →</button>
+  </div>
+  <div class="free-badge">✓ Free forever &nbsp;·&nbsp; ✓ No spam &nbsp;·&nbsp; <span>✓ 18,000+ members waiting</span></div>
+  <div class="success-msg" id="successMsg">🎉 Welcome to the hive! Check your inbox to confirm.</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Job<span>Hive</span></div>
+  <p>© 2026 JobHive · Built by job seekers, for job seekers.</p>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+    <a href="#">Blog</a>
+  </div>
+</footer>
+
+<script>
+  function handleJoin() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('emailInput').style.borderColor = '#FF6B35';
+      document.getElementById('emailInput').placeholder = 'Enter a valid email!';
+      return;
+    }
+    document.getElementById('emailInput').style.borderColor = 'var(--green)';
+    document.getElementById('successMsg').style.display = 'block';
+    document.querySelector('.signup-form button').textContent = '✓ Joined!';
+    document.querySelector('.signup-form button').style.background = 'var(--green)';
+  }
+
+  // Smooth scroll for all anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .room-card, .testimonial, .step').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
